@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta-name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Messa Restaurant Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            font-family: 'Georgia', serif;
+            overflow-x: hidden;
+        }
+
+        .scroll-container {
+            height: 100vh;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+        }
+
+        .menu-page {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+
+        .menu-page img {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            object-fit: contain;
+            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            opacity: 0;
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #d4af37;
+            font-size: 23px;
+            text-align: center;
+            z-index: 100;
+            animation: bounce 2s infinite;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            visibility: visible;
+        }
+
+        .scroll-indicator.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-12px); }
+        }
+
+        @media (max-width: 768px) {
+            .menu-page {
+                padding: 10px;
+            }
+            .menu-page img {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-container">
+        <div class="menu-page"><img src="1.png" alt="Menu Page 1"></div>
+        <div class="menu-page"><img src="2.png" alt="Menu Page 2"></div>
+        <div class="menu-page"><img src="3.png" alt="Menu Page 3"></div>
+        <div class="menu-page"><img src="4.png" alt="Menu Page 4"></div>
+        <div class="menu-page"><img src="5.png" alt="Menu Page 5"></div>
+        <div class="menu-page"><img src="6.png" alt="Menu Page 6"></div>
+        <div class="menu-page"><img src="7.png" alt="Menu Page 7"></div>
+        <div class="menu-page" id="last-page"><img src="8.png" alt="Menu Page 8"></div>
+    </div>
+
+    <div class="scroll-indicator" id="scroll-indicator">
+        <div>Scroll to explore</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </div>
+
+    <script>
+        // HIDE INDICATOR WHEN PAGE 8 IS VISIBLE
+        const lastPage = document.getElementById('last-page');
+        const scrollIndicator = document.getElementById('scroll-indicator');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    scrollIndicator.classList.add('hidden');
+                }
+            });
+        }, {
+            threshold: 0.6
+        });
+
+        observer.observe(lastPage);
+
+        // LOAD IMAGES (your existing logic)
+        async function loadMenuImages() {
+            const filenames = [
+                'Image 1', 'Image 2', 'Image 3', 'Image 4',
+                'Image 5', 'Image 6', 'Image 7', 'Image 8'
+            ];
+
+            const menuPages = document.querySelectorAll('.menu-page img');
+            
+            for (let i = 0; i < menuPages.length; i++) {
+                try {
+                    const data = await window.fs.readFile(filenames[i], { encoding: 'utf8' });
+                    menuPages[i].src = 'data:image/png;base64,' + data;
+                } catch (error) {
+                    console.log('Loading image: ' + filenames[i]);
+                }
+            }
+        }
+
+        loadMenuImages();
+    </script>
+</body>
+</html>
